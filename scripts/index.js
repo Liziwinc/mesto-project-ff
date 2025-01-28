@@ -23,5 +23,4 @@ function createCard(cardData) {
 
 function deleteCard(element) {
   element.remove();
-  console.log("DELETED");
 }
