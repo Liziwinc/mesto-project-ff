@@ -2,21 +2,22 @@ const cardTemplate = document.querySelector("#card-template").content;
 const cardsContainer = document.querySelector(".places__list");
 
 initialCards.forEach((element) => {
-  cardsContainer.append(createCard(element));
+  cardsContainer.append(createCard(element, deleteCard));
 });
 
-function createCard(cardData) {
+function createCard(cardData, deleteFunction) {
   const cardElement = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
+  const cardImage = cardElement.querySelector(".card__image");
 
-  cardElement.querySelector(".card__image").src = cardData.link;
-  cardElement.querySelector(".card__image").alt = cardData.name;
+  cardImage.src = cardData.link;
+  cardImage.alt = cardData.name;
   cardElement.querySelector(".card__title").textContent = cardData.name;
 
   cardElement
     .querySelector(".card__delete-button")
-    .addEventListener("click", () => deleteCard(cardElement));
+    .addEventListener("click", () => deleteFunction(cardElement));
 
   return cardElement;
 }
