@@ -16,10 +16,8 @@ const captionFromImage = popupImage.querySelector(".popup__caption");
 const buttonOpenFormProfile = document.querySelector(".profile__edit-button");
 const buttonOpenFormNewCard = document.querySelector(".profile__add-button");
 
-const titleProfile = document.querySelector(".profile__title").textContent;
-const descriptionProfile = document.querySelector(
-  ".profile__description"
-).textContent;
+let titleProfile = document.querySelector(".profile__title");
+let descriptionProfile = document.querySelector(".profile__description");
 
 const formEditProfile = document.querySelector('form[name="edit-profile"]');
 const formAddCard = document.querySelector('form[name="new-place"]');
@@ -27,6 +25,10 @@ const formAddCard = document.querySelector('form[name="new-place"]');
 const nameInput = document.querySelector(".popup__input_type_name");
 const jobInput = document.querySelector(".popup__input_type_description");
 
+const popupEditInputName = popupEdit.querySelector(".popup__input_type_name");
+const popupEditInputDescription = popupEdit.querySelector(
+  ".popup__input_type_description"
+);
 
 function createCards() {
   initialCards.forEach((element) => {
@@ -44,9 +46,8 @@ function openPopupImage(event) {
 }
 
 function openPopupProfile() {
-  popupEdit.querySelector(".popup__input_type_name").value = titleProfile;
-  popupEdit.querySelector(".popup__input_type_description").value =
-    descriptionProfile;
+  popupEditInputName.value = titleProfile.textContent;
+  popupEditInputDescription.value = descriptionProfile.textContent;
   openModal(popupEdit);
 }
 
@@ -54,12 +55,12 @@ function openPopupNewCard() {
   openModal(popupNewCard);
 }
 
-function handleFormSubmit(event) {
+function handleFormEditProfileSubmit(event) {
   event.preventDefault();
   const name = nameInput.value;
   const description = jobInput.value;
-  document.querySelector(".profile__title").textContent = name;
-  document.querySelector(".profile__description").textContent = description;
+  titleProfile.textContent = name;
+  descriptionProfile.textContent = description;
   closeModal(popupEdit);
 }
 
@@ -88,5 +89,5 @@ popupsArr.forEach((el) => {
 buttonOpenFormProfile.addEventListener("click", openPopupProfile);
 buttonOpenFormNewCard.addEventListener("click", openPopupNewCard);
 
-formEditProfile.addEventListener("submit", handleFormSubmit);
+formEditProfile.addEventListener("submit", handleFormEditProfileSubmit);
 formAddCard.addEventListener("submit", handleFormAddCardSubmit);
