@@ -6,7 +6,7 @@ export function openModal(popup) {
 export function closeModal(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", closeEscPopup);
-  document.addEventListener("click", closeOverlayPopup);
+  document.removeEventListener("click", closeOverlayPopup);
 }
 
 function closeEscPopup(e) {
@@ -22,6 +22,6 @@ function closeOverlayPopup(e) {
     e.target.classList.contains("popup__close")
   ) {
     const popup = e.target.closest(".popup");
-      closeModal(popup);
+    closeModal(popup);
   }
 }
