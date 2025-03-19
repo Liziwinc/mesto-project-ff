@@ -43,3 +43,13 @@ export function createCard(
 
   return cardElement;
 }
+
+export function updateLikeState(likeButton, likeCountElement, likes, userId) {
+  likeCountElement.textContent = likes.length;
+  if (likes.some((like) => like._id === userId)) {
+    likeButton.classList.add("card__like-button_is-active");
+  } else {
+    likeButton.classList.remove("card__like-button_is-active");
+  }
+}
+

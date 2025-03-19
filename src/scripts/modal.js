@@ -1,8 +1,7 @@
 export function openModal(popup) {
   popup.classList.add("popup_is-opened");
-  document.addEventListener("keydown", closeEscPopup);
-  document.addEventListener("click", closeOverlayPopup);
 }
+
 export function closeModal(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", closeEscPopup);
@@ -16,12 +15,17 @@ function closeEscPopup(e) {
   }
 }
 
-function closeOverlayPopup(e) {
+function closeOverlayPopup(event) {
   if (
-    e.target.classList.contains("popup") ||
-    e.target.classList.contains("popup__close")
+    event.target.classList.contains("popup") ||
+    event.target.classList.contains("popup__close")
   ) {
-    const popup = e.target.closest(".popup");
-    closeModal(popup);
+    closeModal(event.target.closest(".popup"));
   }
 }
+
+document.addEventListener("keydown", closeEscPopup);
+
+document.querySelectorAll(".popup").forEach((popup) => {
+  popup.addEventListener("click", closeOverlayPopup);
+});

@@ -13,14 +13,12 @@ const hideInputError = (formElement, inputElement, config) => {
 };
 
 const checkInputValidity = (formElement, inputElement, config) => {
-  const pattern = /^[a-zA-Zа-яА-Я\s-]+$/;
-  if (inputElement.type !== "url" && inputElement.dataset.errorMessage) {
-    if (inputElement.value.length > 0 && !pattern.test(inputElement.value)) {
-      inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-    } else {
-      inputElement.setCustomValidity("");
-    }
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
   }
+
   if (!inputElement.validity.valid) {
     showInputError(
       formElement,
@@ -65,7 +63,6 @@ const toggleButtonState = (inputList, buttonElement, config) => {
 export const enableValidation = (config) => {
   const formList = Array.from(document.querySelectorAll(config.formSelector));
   formList.forEach((formElement) => {
-    formElement.addEventListener("submit", (evt) => evt.preventDefault());
     setEventListeners(formElement, config);
   });
 };

@@ -1,5 +1,5 @@
 import "./pages/index.css";
-import { createCard } from "./scripts/card.js";
+import { createCard, updateLikeState } from "./scripts/card.js";
 import { openModal, closeModal } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import {
@@ -43,9 +43,9 @@ const buttonOpenFormProfile = document.querySelector(".profile__edit-button");
 const buttonOpenFormNewCard = document.querySelector(".profile__add-button");
 const buttonOpenFormAvatar = document.querySelector(".profile__avatar-button");
 
-let titleProfile = document.querySelector(".profile__title");
-let descriptionProfile = document.querySelector(".profile__description");
-let imageProfile = document.querySelector(".profile__image_avatar");
+const titleProfile = document.querySelector(".profile__title");
+const descriptionProfile = document.querySelector(".profile__description");
+const imageProfile = document.querySelector(".profile__image_avatar");
 
 const formEditProfile = document.querySelector('form[name="edit-profile"]');
 const formAddCard = document.querySelector('form[name="new-place"]');
@@ -63,6 +63,8 @@ const popupEditInputDescription = popupEdit.querySelector(
 let userId;
 let cardIdToDelete;
 let cardElementToDelete;
+
+enableValidation(validationConfig);
 
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([user, cards]) => {
@@ -93,17 +95,14 @@ function openPopupProfile() {
   popupEditInputDescription.value = descriptionProfile.textContent;
   clearValidation(popupEdit, validationConfig);
   openModal(popupEdit);
-  enableValidation(validationConfig);
 }
 
 function openPopupNewCard() {
   openModal(popupNewCard);
-  enableValidation(validationConfig);
 }
 
 function openPopupAvatar() {
   openModal(popupAvatar);
-  enableValidation(validationConfig);
 }
 
 function openDeletePopup(cardId, cardElement) {
@@ -114,16 +113,12 @@ function openDeletePopup(cardId, cardElement) {
 
 function addLike(evt, cardId, cardElement, currentUserId) {
   const likeButton = evt.target;
+  const likeCountElement = cardElement.querySelector(".card__like-count");
   const isLiked = likeButton.classList.contains("card__like-button_is-active");
+
   changeLikeCardStatus(cardId, isLiked)
     .then((updatedCard) => {
-      const likeCountElement = cardElement.querySelector(".card__like-count");
-      likeCountElement.textContent = updatedCard.likes.length;
-      if (updatedCard.likes.some((like) => like._id === currentUserId)) {
-        likeButton.classList.add("card__like-button_is-active");
-      } else {
-        likeButton.classList.remove("card__like-button_is-active");
-      }
+      updateLikeState(likeButton, likeCountElement, updatedCard.likes, currentUserId);
     })
     .catch((err) => {
       console.error(err);
@@ -132,11 +127,8 @@ function addLike(evt, cardId, cardElement, currentUserId) {
 
 function handleFormEditProfileSubmit(event) {
   event.preventDefault();
-  const submitButton = formEditProfile.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  const originalText = submitButton.textContent;
-  submitButton.textContent = "Сохранение...";
+  const originalText = event.submitter.textContent;
+  event.submitter.textContent = "Сохранение...";
 
   const newName = nameInput.value;
   const newDescription = jobInput.value;
@@ -151,17 +143,14 @@ function handleFormEditProfileSubmit(event) {
       console.error(err);
     })
     .finally(() => {
-      submitButton.textContent = originalText;
+      event.submitter.textContent = originalText;
     });
 }
 
 function handleFormAddCardSubmit(event) {
   event.preventDefault();
-  const submitButton = formAddCard.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  const originalText = submitButton.textContent;
-  submitButton.textContent = "Сохранение...";
+  const originalText = event.submitter.textContent;
+  event.submitter.textContent = "Сохранение...";
 
   const cardName = formAddCard.elements["place-name"].value;
   const cardLink = formAddCard.elements.link.value;
@@ -177,24 +166,20 @@ function handleFormAddCardSubmit(event) {
       );
       cardsContainer.prepend(newCardElement);
       closeModal(popupNewCard);
-      clearValidation(popupNewCard, validationConfig);
       formAddCard.reset();
     })
     .catch((err) => {
       console.error(err);
     })
     .finally(() => {
-      submitButton.textContent = originalText;
+      event.submitter.textContent = originalText;
     });
 }
 
 function handleFormAvatarSubmit(event) {
   event.preventDefault();
-  const submitButton = formUpdateAvatar.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  const originalText = submitButton.textContent;
-  submitButton.textContent = "Сохранение...";
+  const originalText = event.submitter.textContent;
+  event.submitter.textContent = "Сохранение...";
   const avatarLink = formUpdateAvatar.elements.link.value;
 
   updateUserAvatar(avatarLink)
@@ -202,23 +187,19 @@ function handleFormAvatarSubmit(event) {
       imageProfile.src = data.avatar;
       closeModal(popupAvatar);
       formUpdateAvatar.reset();
-      clearValidation(popupAvatar, validationConfig);
     })
     .catch((err) => {
       console.error(err);
     })
     .finally(() => {
-      submitButton.textContent = originalText;
+      event.submitter.textContent = originalText;
     });
 }
 
 function handleFormCardDeleteSubmit(event) {
   event.preventDefault();
-  const submitButton = formDeleteCard.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  const originalText = submitButton.textContent;
-  submitButton.textContent = "Сохранение...";
+  const originalText = event.submitter.textContent;
+  event.submitter.textContent = "Удаление...";
   if (cardIdToDelete) {
     deleteUserCard(cardIdToDelete)
       .then(() => {
@@ -229,7 +210,7 @@ function handleFormCardDeleteSubmit(event) {
         console.error(err);
       })
       .finally(() => {
-        submitButton.textContent = originalText;
+        event.submitter.textContent = originalText;
       });
   }
 }
